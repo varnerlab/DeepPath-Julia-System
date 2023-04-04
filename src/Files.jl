@@ -1,14 +1,15 @@
 """
     loadreactionfile(path::String) -> Dict{Int64,MyChemicalReactionModel}
 """
-function loadreactionfile(path::String)::Dict{Int64,MyChemicalReactionModel}
+function loadreactionfile(path::String; 
+    prefix::Union{Nothing, String} = nothing)::Dict{Int64,MyChemicalReactionModel}
 
      # check: is path legit?
     # in production we would check this path, assume ok for now
 
     # initialize -
     reactions = Dict{Int64, MyChemicalReactionModel}()
-    counter = 0;
+    counter = 1;
 
     # use example pattern from: https://varnerlab.github.io/CHEME-1800-Computing-Book/unit-1-basics/data-file-io.html#program-read-a-csv-file-refactored
     open(path, "r") do io # open a stream to the file
@@ -39,7 +40,6 @@ function loadreactionfile(path::String)::Dict{Int64,MyChemicalReactionModel}
                 reaction_string = string(fields[4]);
                 reversible = parse(Bool, fields[5]);
 
-
                 # build the reaction model -
                 model = build(MyChemicalReactionModel, (
                     ecnumber = ecnumber,  
@@ -47,7 +47,7 @@ function loadreactionfile(path::String)::Dict{Int64,MyChemicalReactionModel}
                     ename = ename,
                     reaction = reaction_string, 
                     reversible = reversible
-                ));
+                ), prefix = prefix);
 
                 # store -
                 reactions[counter] = model;
@@ -60,4 +60,11 @@ function loadreactionfile(path::String)::Dict{Int64,MyChemicalReactionModel}
 
     # return -
     return reactions;
+end
+
+"""
+    loaddataframe(path::String) -> DataFrame
+"""
+function loaddataframe(path::String)::DataFrame
+    return CSV.read(path,DataFrame)
 end
