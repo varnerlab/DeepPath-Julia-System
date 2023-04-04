@@ -139,7 +139,7 @@ function _build_stoichiometry_dictionary(reaction::String; delim::Char = '+',
     stoichiometric_dictionary = Dict{String,Float64}()
 
     # recursive descent -
-    phrases = split(reaction,"<=>")
+    phrases = split(reaction,"<=>")    
     LD = _parse_reaction_phrase(string(phrases[1]), delim=delim, prefix=nothing);
     RD = _parse_reaction_phrase(string(phrases[2]), delim=delim, prefix=nothing);
 

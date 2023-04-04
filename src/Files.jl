@@ -1,7 +1,7 @@
 """
-    loadreactionfile(path::String) -> Dict{Int64,MyChemicalReactionModel}
+    loadvffreactionfile(path::String) -> Dict{Int64,MyChemicalReactionModel}
 """
-function loadreactionfile(path::String; 
+function loadvffreactionfile(path::String; 
     prefix::Union{Nothing, String} = nothing)::Dict{Int64,MyChemicalReactionModel}
 
      # check: is path legit?
@@ -58,6 +58,55 @@ function loadreactionfile(path::String;
         end
     end
 
+    # return -
+    return reactions;
+end
+
+function loadkeggreactionfile(path::String; 
+    prefix::Union{Nothing, String} = nothing)::Dict{Int64,MyChemicalReactionModel}
+
+     # check: is path legit?
+    # in production we would check this path, assume ok for now
+
+    # initialize -
+    reactions = Dict{Int64, MyChemicalReactionModel}()
+    df = loaddataframe(path)
+    number_of_reactions = nrow(df);
+
+    # index,entry,name,equation,enzyme,equation_no_coeff
+
+    # process each reaction -
+    for i ∈ 1:number_of_reactions
+        
+        # grab the fields -
+        ecnumber = df[i,:enzyme];
+        if (ismissing(ecnumber) == true)
+            ecnumber = "0.0.0.0"
+        end
+        ecnumber = "ec:$(ecnumber)" # add prefix -
+
+        ename = df[i,:name];
+        if (ismissing(ename) == true)
+            ename = "missing"
+        end
+
+        rnnumber = df[i,:entry];
+        reaction_string = df[i,:equation_no_coeff];
+        reversible = false;
+
+        # build the reaction model -
+        model = build(MyChemicalReactionModel, (
+            ecnumber = ecnumber,  
+            rnnumber = rnnumber,
+            ename = ename,
+            reaction = reaction_string, 
+            reversible = reversible
+        ), prefix = prefix);
+
+        # store -
+        reactions[i] = model;
+    end
+    
     # return -
     return reactions;
 end

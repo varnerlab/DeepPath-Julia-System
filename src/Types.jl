@@ -36,10 +36,10 @@ Holds chemical reaction information. See the Test.net file
 mutable struct MyChemicalReactionModel <: AbstractChemicalReaction
     
     # data -
-    ecnumber::String
-    rnnumber::String
-    ename::String
-    reaction::String
+    ecnumber::Union{Nothing, String}
+    rnnumber::Union{Nothing, String}
+    ename::Union{Nothing, String}
+    reaction::Union{Nothing, String}
     reversible::Bool
     stoichiometry::Dict{String,Float64}
 
